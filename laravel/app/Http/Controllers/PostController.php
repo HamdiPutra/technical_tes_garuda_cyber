@@ -29,7 +29,23 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title' => 'required|max:255',
+            'description' => 'required|string'
+        ], [
+            'title.required' => 'Title Wajib Diisi',
+            'description.required' => 'Description Wajib Diisi'
+        ]);
+        $data = Post::create([
+            'user_id' => 1,
+            'title' => $request->input('title'),
+            'description' => $request->input('description')
+        ]);
+
+        return response()->json([
+            'message' => 'Post berhasil disimpan',
+            'data' => $data
+        ],201) ;
     }
 
     /**
@@ -37,7 +53,8 @@ class PostController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $post = Post::findOrFail($id);
+        return response()->json($post);
     }
 
     /**
