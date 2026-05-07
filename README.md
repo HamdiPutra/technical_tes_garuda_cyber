@@ -3,7 +3,7 @@ Project ini menggunakan:
 - Frontend: Next.js
 
 Cara Menginstal dan Menjalankan:
-1. Clone Repositoryclone => git clone https://github.com/HamdiPutra/technical_tes_garuda_cyber.git
+1. Clone Repository project => git clone https://github.com/HamdiPutra/technical_tes_garuda_cyber.git
 2. Buka terminal dan masuk ke folder laravel => cd laravel
 3. Install dependency laravel => composer install
 4. Setup environment laravel => cp .env.example .env
