@@ -1,13 +1,40 @@
+"use client";
 import Link from "next/link"
+import { useEffect, useState } from "react";
+
+
 function Header() {
+    const [isLogin, setIsLogin] = useState(false);
+
+    useEffect(() => {
+        const checkLogin = () => {
+            const token = localStorage.getItem("token");
+            setIsLogin(!!token);
+        };
+
+        // pertama load
+        checkLogin();
+
+        // dengarkan event login/logout
+        window.addEventListener("auth-change", checkLogin);
+
+        return () => {
+            window.removeEventListener("auth-change", checkLogin);
+        };
+    }, []);
+    
     return (
         <div className="navbar bg-base-100 shadow-sm">
             <div className="navbar-start">
-                <a className="btn btn-ghost text-xl">My App</a>
+                <a href="/" className="btn btn-ghost text-xl">My App</a>
             </div>
             <div className="navbar-center gap-4">
-                <Link href="/">Home</Link>
-                <Link href="/posts">Posts</Link>
+                {isLogin && (
+                    <>
+                        <Link href="/">Home</Link>
+                        <Link href="/posts">Posts</Link>
+                    </>
+                )}
             </div>
             <div className="navbar-end">
                 <div className="dropdown dropdown-end">
@@ -20,8 +47,20 @@ function Header() {
                     </div>
                     <ul
                         className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-                        <li><a>Login</a></li>
-                        <li><a>Register</a></li>
+                        {!isLogin ? (
+                            <>
+                                <li>
+                                    <Link href="/authentication/login">Login</Link>
+                                </li>
+                                <li>
+                                    <Link href="/authentication/register">Register</Link>
+                                </li>
+                            </>
+                        ) : (
+                            <li>
+                                <Link href="/authentication/logout">Logout</Link>
+                            </li>
+                        )}
                     </ul>
                 </div>
             </div>

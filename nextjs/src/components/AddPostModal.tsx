@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
+import { createPost } from "@/lib/api";
 
-function AddPostModal() {
+function AddPostModal({ onSuccess }: { onSuccess: () => void }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
@@ -19,25 +20,16 @@ function AddPostModal() {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/posts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title,
-          description,
-        }),
-      });
+      await createPost({ title, description });
 
-      if (!res.ok) throw new Error("Gagal simpan post");
+      alert("Post berhasil disimpan")
 
       // reset form
       setTitle("");
       setDescription("");
 
       closeModal();
-      window.location.reload();
+      onSuccess();
     
     } catch (error){
       console.error(error);

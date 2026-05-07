@@ -4,15 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $posts = Post::latest()->paginate(5);
+        $user = $request->user();
+
+        $posts = Post::where('user_id', $user->id)->latest()->paginate(5);
         return response()->json($posts);
     }
 
@@ -37,7 +40,7 @@ class PostController extends Controller
             'description.required' => 'Description Wajib Diisi'
         ]);
         $data = Post::create([
-            'user_id' => 1,
+            'user_id' => Auth::user()->id,
             'title' => $request->input('title'),
             'description' => $request->input('description')
         ]);
@@ -45,15 +48,18 @@ class PostController extends Controller
         return response()->json([
             'message' => 'Post berhasil disimpan',
             'data' => $data
-        ],201) ;
+        ],201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request, string $id)
     {
-        $post = Post::findOrFail($id);
+        $post = Post::where('id', $id)
+            ->where('user_id', $request->user()->id)
+            ->firstOrFail();
+            
         return response()->json($post);
     }
 
@@ -70,14 +76,42 @@ class PostController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'title' => 'required|max:255',
+            'description' => 'required|string'
+        ], [
+            'title.required' => 'Title Wajib Diisi',
+            'description.required' => 'Description Wajib Diisi'
+        ]);
+        
+        $data = Post::where('id', $id)
+            ->where('user_id', $request->user()->id)
+            ->firstOrFail();
+
+        $data->update([
+            'title' => $request->input('title'),
+            'description' => $request->input('description')
+        ]);
+
+        return response()->json([
+            'message' => 'Post berhasil diupdate',
+            'data' => $data
+        ],201);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
-        //
+        $post = Post::where('id', $id)
+            ->where('user_id', $request->user()->id)
+            ->firstOrFail();
+
+        $post->delete();
+        
+        return response()->json([
+            'message' => 'Post berhasil dihapus',
+        ],200);
     }
 }

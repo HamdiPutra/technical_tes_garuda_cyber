@@ -2,7 +2,8 @@ export interface Post{
     id:number,
     user_id:number,
     title:string,
-    description:string
+    description:string,
+    updated_at:string
 }
 
 export interface PaginatedPosts {
@@ -12,5 +13,5 @@ export interface PaginatedPosts {
 }
 
 export interface PostListProps {
-    posts: PaginatedPosts
+    posts: PaginatedPosts,
 }
